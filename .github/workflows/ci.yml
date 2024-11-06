@@ -5,22 +5,27 @@ on:
 jobs:
   ci:
     strategy:
+      fail-fast: false
       matrix:
         config:
         # - { os: 'ubuntu-latest' }
         # - { os: 'macos-latest' }
-          - { os: 'windows-latest', native: 'true',  type: 'msys2', msystem: 'ucrt64', arch: 'ucrt-x86_64' }
-          - { os: 'windows-latest', native: 'true',  type: 'msys2', msystem: 'clang64', arch: 'clang-x86_64' }
-          - { os: 'windows-latest', native: 'true',  type: 'msys2', msystem: 'clang32', arch: 'clang-i686' }
-          - { os: 'windows-latest', native: 'true',  type: 'msys2', msystem: 'mingw64', arch: 'x86_64' }
-          - { os: 'windows-latest', native: 'true',  type: 'msys2', msystem: 'mingw32', arch: 'i686' }
-          - { os: 'windows-latest', native: 'false', type: 'msys2', msystem: 'clangarm64', arch: 'clang-aarch64' }
+          - { os: 'windows-latest', native: 'true',  type: 'msys2', shell: 'msys2 {0}', msystem: 'ucrt64', arch: 'ucrt-x86_64' }
+          - { os: 'windows-latest', native: 'true',  type: 'msys2', shell: 'msys2 {0}', msystem: 'clang64', arch: 'clang-x86_64' }
+          - { os: 'windows-latest', native: 'true',  type: 'msys2', shell: 'msys2 {0}', msystem: 'clang32', arch: 'clang-i686' }
+          - { os: 'windows-latest', native: 'true',  type: 'msys2', shell: 'msys2 {0}', msystem: 'mingw64', arch: 'x86_64' }
+          - { os: 'windows-latest', native: 'true',  type: 'msys2', shell: 'msys2 {0}', msystem: 'mingw32', arch: 'i686' }
+          - { os: 'windows-latest', native: 'false', type: 'msys2', shell: 'msys2 {0}', msystem: 'clangarm64', arch: 'clang-aarch64' }
           - { os: 'windows-latest', native: 'true',  type: 'msvc', arch: 'x64' }
           - { os: 'windows-latest', native: 'true',  type: 'msvc', arch: 'x86' }
           - { os: 'windows-latest', native: 'true',  type: 'msvc', arch: 'amd64_arm' }
           - { os: 'windows-latest', native: 'true',  type: 'msvc', arch: 'amd64_arm64' }
 
     runs-on: ${{ matrix.config.os }}
+
+    defaults:
+      run:
+        shell: ${{ matrix.config.shell }}
 
     steps:
       - name: Checkout repository
@@ -31,11 +36,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
-      - name: Install dependencies
-        if: matrix.config.type != 'msys2'
-        run: pip install meson ninja
-      
+
       - name: Setup MSVC
         uses: TheMrMilchmann/setup-msvc-dev@v3
         if: matrix.config.type == 'msvc'
@@ -50,9 +51,11 @@ jobs:
           install: >-
             curl
             git
-            mingw-w64-${{ matrix.config.arch }}-meson
-            mingw-w64-${{ matrix.config.arch }}-ninja
-            mingw-w64-${{ matrix.config.arch }}-gcovr
+            mingw-w64-${{ matrix.config.arch }}-python
+            mingw-w64-${{ matrix.config.arch }}-pip
+      
+      - name: Install dependencies
+        run:  pip3 install meson ninja gcovr
 
       - name: Configure
         run: meson setup -Dtests=true builddir
