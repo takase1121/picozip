@@ -383,8 +383,8 @@ TEST test_picozip_new_entry_path(void)
         },
     };
 
-    ASSERT_EQ(0, utime("tests/test.txt", &(struct utimbuf){.actime = entries[0].mod_time, .modtime = entries[0].mod_time}));
-    ASSERT_EQ(0, utime("tests/test2.txt", &(struct utimbuf){.actime = entries[1].mod_time, .modtime = entries[1].mod_time}));
+    ASSERT_EQ(0, utime("tests/test.txt", (const struct utimbuf *)&(struct utimbuf){.actime = entries[0].mod_time, .modtime = entries[0].mod_time}));
+    ASSERT_EQ(0, utime("tests/test2.txt", (const struct utimbuf *)&(struct utimbuf){.actime = entries[1].mod_time, .modtime = entries[1].mod_time}));
     ASSERT_EQ(PICOZIP_OK, picozip_new_entry_path(file, "test.txt", "tests/test.txt", NULL, 0));
     ASSERT_EQ(PICOZIP_OK, picozip_new_entry_path(file, "test2.txt", "tests/test2.txt", "comment", 7));
     CHECK_CALL(assert_zip_file(entries, 2, NULL, 0));
