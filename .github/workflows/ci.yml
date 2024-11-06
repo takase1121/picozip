@@ -60,11 +60,10 @@ jobs:
         run:  pip3 install meson ninja gcovr
 
       - name: Configure
-        run: meson setup -Dtests=true builddir
+        run: meson setup -Dtests=true -Ddefault_library=both builddir
 
       - name: Compile
         run: meson compile -C builddir
-
       - name: Test & Coverage
         run: meson test -C builddir --print-errorlogs --no-stdsplit
         
