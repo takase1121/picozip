@@ -67,7 +67,9 @@ jobs:
       - name: Compile
         run: meson compile -C builddir
       - name: Test & Coverage
-        run: meson test -C builddir --print-errorlogs --no-stdsplit
+        run: |
+          meson test -C builddir --print-errorlogs --no-stdsplit
+          ninja -C builddir coverage
         
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
