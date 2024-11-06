@@ -26,12 +26,21 @@ picozip_lib = library(
     picozip_src,
     c_args: picozip_cargs,
     include_directories: picozip_inc,
+    install: true,
+    version: meson.project_version()
 )
 
 picozip_dep = declare_dependency(
     link_with: picozip_lib,
     compile_args: picozip_cargs,
     include_directories: picozip_inc,
+)
+
+pkg = import('pkgconfig')
+pkg.generate(
+    picozip_lib,
+    name: 'picozip',
+    description: 'A library for writing ZIP files',
 )
 
 if get_option('tests')
