@@ -1,0 +1,3 @@
+option('stdio', type : 'boolean', value : true, description : 'Enables support for file I/O')
+option('os_mtime', type : 'boolean', value : true, description : 'Enables support for getting file modification time via stat() and equivalent')
+option('tests', type : 'boolean', value : false, description : 'Builds unit tests')
