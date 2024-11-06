@@ -62,7 +62,7 @@ jobs:
         run:  pip3 install meson ninja gcovr
 
       - name: Configure
-        run: meson setup -Dtests=true -Ddefault_library=both builddir
+        run: meson setup -Dtests=true -Ddefault_library=static builddir
 
       - name: Compile
         run: meson compile -C builddir
