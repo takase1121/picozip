@@ -10,7 +10,6 @@
 #define stat _stat
 
 #elif defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-#define _XOPEN_SOURCE 500
 #define PICOZIP__UNIX
 #include <utime.h>
 #include <sys/stat.h>
