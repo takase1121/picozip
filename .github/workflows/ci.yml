@@ -10,14 +10,13 @@ jobs:
         config:
         # - { os: 'ubuntu-latest' }
         # - { os: 'macos-latest' }
-          - { os: 'windows-latest', native: 'true',  shell: 'msys2 {0}', type: 'msys2', msystem: 'ucrt64', arch: 'ucrt-x86_64' }
-          - { os: 'windows-latest', native: 'true',  shell: 'msys2 {0}', type: 'msys2', msystem: 'clang64', arch: 'clang-x86_64' }
-          - { os: 'windows-latest', native: 'true',  shell: 'msys2 {0}', type: 'msys2', msystem: 'clang32', arch: 'clang-i686' }
-          - { os: 'windows-latest', native: 'true',  shell: 'msys2 {0}', type: 'msys2', msystem: 'mingw64', arch: 'x86_64' }
-          - { os: 'windows-latest', native: 'true',  shell: 'msys2 {0}', type: 'msys2', msystem: 'mingw32', arch: 'i686' }
-          - { os: 'windows-latest', native: 'false', shell: 'msys2 {0}', type: 'msys2', msystem: 'clangarm64', arch: 'clang-aarch64' }
-          - { os: 'windows-latest', native: 'true',  shell: 'cmd', type: 'msvc', arch: 'x64' }
-          - { os: 'windows-latest', native: 'true',  shell: 'cmd', type: 'msvc', arch: 'x86' }
+          - { os: 'windows-latest', shell: 'msys2 {0}', type: 'msys2', msystem: 'ucrt64', arch: 'ucrt-x86_64' }
+          - { os: 'windows-latest', shell: 'msys2 {0}', type: 'msys2', msystem: 'clang64', arch: 'clang-x86_64' }
+          - { os: 'windows-latest', shell: 'msys2 {0}', type: 'msys2', msystem: 'clang32', arch: 'clang-i686' }
+          - { os: 'windows-latest', shell: 'msys2 {0}', type: 'msys2', msystem: 'mingw64', arch: 'x86_64' }
+          - { os: 'windows-latest', shell: 'msys2 {0}', type: 'msys2', msystem: 'mingw32', arch: 'i686' }
+          - { os: 'windows-latest', shell: 'cmd', type: 'msvc', arch: 'x64' }
+          - { os: 'windows-latest', shell: 'cmd', type: 'msvc', arch: 'x86' }
 
     runs-on: ${{ matrix.config.os }}
 
@@ -51,22 +50,25 @@ jobs:
             git
             mingw-w64-${{ matrix.config.arch }}-python
             mingw-w64-${{ matrix.config.arch }}-python-pip
+            mingw-w64-${{ matrix.config.arch }}-cmake
+            mingw-w64-${{ matrix.config.arch }}-gcc
+            mingw-w64-${{ matrix.config.arch }}-make
+            mingw-w64-${{ matrix.config.arch }}-pkg-config
+            mingw-w64-${{ matrix.config.arch }}-binutils
       
       - name: Install dependencies
         run:  pip3 install meson ninja gcovr
 
       - name: Configure
-        run: meson setup -Dtests=true builddir
+        run: meson setup -Dtests=true -Ddefault_library=both builddir
 
       - name: Compile
         run: meson compile -C builddir
 
       - name: Test & Coverage
-        if: matrix.config.native == 'true'
         run: meson test -C builddir --print-errorlogs --no-stdsplit
         
       - name: Upload Coverage
-        if: matrix.config.native == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.config.os }}-${{ matrix.config.type }}-${{ matrix.config.arch }}
