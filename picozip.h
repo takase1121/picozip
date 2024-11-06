@@ -94,7 +94,8 @@ extern "C"
 #define picozip__fstat _fstat
 
 #elif defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
-#define _XOPEN_SOURCE 500
+#define _XOPEN_SOURCE 600
+#define _POSIX_C_SOURCE 200112L
 #define PICOZIP__UNIX
 #include <sys/stat.h>
 
@@ -162,8 +163,6 @@ extern "C"
                                       const char *const comment, size_t comment_len);
     extern int picozip_free_path(picozip_file *file);
 #endif
-
-#define PICOZIP_IMPLEMENTATION
 
 #ifdef PICOZIP_IMPLEMENTATION
 
