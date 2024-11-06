@@ -55,6 +55,8 @@ jobs:
             mingw-w64-${{ matrix.config.arch }}-make
             mingw-w64-${{ matrix.config.arch }}-pkg-config
             mingw-w64-${{ matrix.config.arch }}-binutils
+            mingw-w64-${{ matrix.config.arch }}-meson
+            mingw-w64-${{ matrix.config.arch }}-ninja
             mingw-w64-${{ matrix.config.arch }}-python-jinja
             mingw-w64-${{ matrix.config.arch }}-python-lxml
       
