@@ -79,3 +79,10 @@ jobs:
           name: builddir-${{ matrix.config.os }}-${{ matrix.config.type }}-${{ matrix.config.arch }}
           path: builddir
           if-no-files-found: ignore
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          draft: true
+          generateReleaseNotes: true
+          skipIfReleaseExists: true
