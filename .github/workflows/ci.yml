@@ -10,8 +10,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        # - { os: 'ubuntu-latest' }
-        # - { os: 'macos-latest' }
+          - { os: 'ubuntu-latest',  shell: 'sh', arch: 'x86_64' }
+          - { os: 'macos-latest',   shell: 'sh', arch: 'aarch64' }
+          - { os: 'macos-13',       shell: 'sh', arch: 'x86_64' }
           - { os: 'windows-latest', shell: 'msys2 {0}', type: 'msys2', msystem: 'ucrt64', arch: 'ucrt-x86_64' }
           - { os: 'windows-latest', shell: 'msys2 {0}', type: 'msys2', msystem: 'clang64', arch: 'clang-x86_64' }
           - { os: 'windows-latest', shell: 'msys2 {0}', type: 'msys2', msystem: 'clang32', arch: 'clang-i686' }
