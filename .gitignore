@@ -56,3 +56,6 @@ builddir
 
 # VSCode files
 .vscode
+
+# example files
+simple.zip

@@ -5,7 +5,7 @@ test_files = [
 
 tests_exe = executable(
     'picozip_tests',
-    ['tests.c'],
+    'tests.c',
     dependencies: [picozip_dep],
     extra_files: test_files
 )
