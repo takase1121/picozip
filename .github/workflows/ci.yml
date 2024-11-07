@@ -34,6 +34,10 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Install meson and ninja
+        if: matrix.config.type != 'msys2'
+        run: pip3 install meson ninja
+
       - name: Setup MSVC
         uses: TheMrMilchmann/setup-msvc-dev@v3
         if: matrix.config.type == 'msvc'
@@ -50,18 +54,16 @@ jobs:
             git
             mingw-w64-${{ matrix.config.arch }}-python
             mingw-w64-${{ matrix.config.arch }}-python-pip
-            mingw-w64-${{ matrix.config.arch }}-cmake
             mingw-w64-${{ matrix.config.arch }}-gcc
-            mingw-w64-${{ matrix.config.arch }}-make
-            mingw-w64-${{ matrix.config.arch }}-pkg-config
+            mingw-w64-${{ matrix.config.arch }}-pkgconf
             mingw-w64-${{ matrix.config.arch }}-binutils
             mingw-w64-${{ matrix.config.arch }}-meson
             mingw-w64-${{ matrix.config.arch }}-ninja
             mingw-w64-${{ matrix.config.arch }}-python-jinja
             mingw-w64-${{ matrix.config.arch }}-python-lxml
       
-      - name: Install dependencies
-        run:  pip3 install meson ninja gcovr
+      - name: Install gcovr
+        run:  pip3 install gcovr
 
       - name: Configure
         run: meson setup -Dtests=true -Db_coverage=true -Ddefault_library=static builddir
