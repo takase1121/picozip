@@ -80,6 +80,11 @@ jobs:
           path: builddir
           if-no-files-found: ignore
 
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
