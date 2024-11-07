@@ -222,7 +222,7 @@ extern "C"
 /* https://create.stephan-brumme.com/crc32 */
 #define PICOZIP__CRC_START 0
 
-    uint32_t picozip__crc32(const uint8_t *ptr, size_t buf_len, uint32_t crc)
+    static uint32_t picozip__crc32(const uint8_t *ptr, size_t buf_len, uint32_t crc)
     {
         static const uint32_t s_crc_table[256] = {
             0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F, 0xE963A535,
@@ -386,11 +386,11 @@ extern "C"
         }
     }
 
-#define PICOZIP__FLUSH(FILE, SRC, SIZE, IFFAIL)                                  \
-    do                                                                           \
-    {                                                                            \
-        if ((FILE)->write_cb((FILE)->userdata, (SRC), (SIZE)) != (size_t)(SIZE)) \
-            IFFAIL(FILE)->offset += (SIZE);                                      \
+#define PICOZIP__FLUSH(FILE, SRC, SIZE, IFFAIL)                                          \
+    do                                                                                   \
+    {                                                                                    \
+        if ((FILE)->write_cb((FILE)->userdata, (SRC), (size_t)(SIZE)) != (size_t)(SIZE)) \
+            IFFAIL(FILE)->offset += (size_t)(SIZE);                                      \
     } while (0)
 
     static int picozip__write_local_entry(picozip_file *file, picozip__entry *entry)
