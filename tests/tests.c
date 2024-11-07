@@ -47,17 +47,6 @@ static void time_t_dostime(time_t current_time, uint16_t *dos_date, uint16_t *do
     *dos_date = (uint16_t)(((tm->tm_year + 1900 - 1980) << 9) + ((tm->tm_mon + 1) << 5) + tm->tm_mday);
 }
 
-static void mem_setup_cb(void *data)
-{
-    picozip_new_mem(&file);
-}
-
-static void mem_teardown_cb(void *data)
-{
-    picozip_free_mem(file);
-    file = NULL;
-}
-
 TEST assert_zip_file(file_entry *entries, size_t entry_len, uint8_t *comment, size_t comment_len)
 {
 #define READ_LE32(D, O) ((uint32_t)(((D)[(O)] << 0) | ((D)[(O) + 1] << 8) | ((D)[(O) + 2] << 16) | ((D)[(O) + 3] << 24)))
@@ -176,6 +165,17 @@ TEST assert_zip_file(file_entry *entries, size_t entry_len, uint8_t *comment, si
     ASSERT_EQ(size, offset);
 
     PASS();
+}
+
+static void mem_setup_cb(void *data)
+{
+    picozip_new_mem(&file);
+}
+
+static void mem_teardown_cb(void *data)
+{
+    picozip_free_mem(file);
+    file = NULL;
 }
 
 TEST test_picozip_new_mem(void)

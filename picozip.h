@@ -321,7 +321,7 @@ extern "C"
         picozip__vec mem;
     } picozip__mem_file;
 
-    static void *picozip__vec_alloc(picozip__vec *vec, size_t size, picozip_alloc_callback alloc, void *userdata)
+    static void *picozip__vec_alloc(picozip__vec *vec, size_t size, picozip_alloc_callback alloc, picozip_free_callback free, void *userdata)
     {
         size_t new_cap;
         void *new_data;
@@ -333,6 +333,7 @@ extern "C"
             if (!new_data)
                 return NULL;
             memcpy(new_data, vec->data, vec->size);
+            free(userdata, vec->data);
             vec->data = new_data;
             vec->cap = new_cap;
         }
@@ -363,7 +364,7 @@ extern "C"
     {
         picozip__entry *entry, **entries;
 
-        if (!(entries = (picozip__entry **)picozip__vec_alloc(&file->entries, sizeof(picozip__entry *), file->alloc_cb, file->userdata)))
+        if (!(entries = (picozip__entry **)picozip__vec_alloc(&file->entries, sizeof(picozip__entry *), file->alloc_cb, file->free_cb, file->userdata)))
             return NULL;
 
         entry = (picozip__entry *)file->alloc_cb(file->userdata, sizeof(picozip__entry) + metadata_len);
@@ -371,13 +372,18 @@ extern "C"
             return NULL;
 
         entries[file->num_entries++] = entry;
+        file->entries.size += sizeof(picozip__entry *);
 
         return entry;
     }
 
     static void picozip__free_last_entry(picozip_file *file)
     {
-        file->free_cb(file->userdata, ((picozip__entry **)file->entries.data)[file->num_entries--]);
+        if (file->num_entries)
+        {
+            file->free_cb(file->userdata, ((picozip__entry **)file->entries.data)[--file->num_entries]);
+            file->entries.size -= sizeof(picozip__entry *);
+        }
     }
 
 #define PICOZIP__FLUSH(FILE, SRC, SIZE, IFFAIL)                                  \
@@ -539,7 +545,7 @@ extern "C"
             file->free_cb(file->userdata, ((picozip__entry **)file->entries.data)[i]);
         }
         file->free_cb(file->userdata, file->entries.data);
-        memset(file, 0, sizeof(*file));
+        file->free_cb(file->userdata, file);
         return PICOZIP_OK;
     }
 
@@ -564,7 +570,7 @@ extern "C"
         if (!file)
             return 0;
 
-        if (!(data = (uint8_t *)picozip__vec_alloc(&file->mem, len, file->file->alloc_cb, file->file->userdata)))
+        if (!(data = (uint8_t *)picozip__vec_alloc(&file->mem, len, file->file->alloc_cb, file->file->free_cb, file->file->userdata)))
             return 0;
 
         memcpy(data + file->mem.size, mem, len);
@@ -700,6 +706,7 @@ extern "C"
     int picozip_new_entry_path(picozip_file *file, const char *const path, const char *const file_path, const char *const comment, size_t comment_len)
     {
         FILE *fptr;
+        int err;
 
         if (!file || !path || !file_path || (comment_len && !comment))
             return PICOZIP_EINVAL;
@@ -709,7 +716,9 @@ extern "C"
         if (!fptr)
             return errno;
 
-        return picozip_new_entry_file(file, path, fptr, comment, comment_len);
+        err = picozip_new_entry_file(file, path, fptr, comment, comment_len);
+        fclose(fptr);
+        return err;
     }
 
     static size_t picozip__file_write(void *userdata, const void *mem, size_t len)
