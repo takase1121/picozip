@@ -3,17 +3,27 @@
 
 #if defined(_WIN32)
 #define PICOZIP__WIN
-#include <sys/utime.h>
-#include <sys/stat.h>
+#include <windows.h>
 
-#define utime _utime
-#define stat _stat
-#define utimbuf _utimbuf
+static int set_file_time(const char *filename, time_t t)
+{
+    HANDLE fh;
+    FILETIME ft;
+    ULARGE_INTEGER time_value;
+    if ((fh = CreateFileA(filename, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL)) == INVALID_HANDLE_VALUE)
+        return -1;
+    time_value.QuadPart = (t * 10000000LL) + 116444736000000000LL;
+    ft.dwLowDateTime = time_value.LowPart;
+    ft.dwHighDateTime = time_value.HighPart;
+    if (!SetFileTime(fh, NULL, NULL, &ft))
+        return -1;
+    CloseHandle(fh);
+    return 0;
+}
 
 #elif defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
 #define PICOZIP__UNIX
 #include <utime.h>
-#include <sys/stat.h>
 
 #endif
 
@@ -384,8 +394,13 @@ TEST test_picozip_new_entry_path(void)
         },
     };
 
+#if defined(PICOZIP__WIN)
+    ASSERT_EQ(0, set_file_time("tests/test.txt", entries[0].mod_time));
+    ASSERT_EQ(0, set_file_time("tests/test2.txt", entries[1].mod_time));
+#elif defined(PICOZIP__UNIX)
     ASSERT_EQ(0, utime("tests/test.txt", (struct utimbuf *)&(struct utimbuf){.actime = entries[0].mod_time, .modtime = entries[0].mod_time}));
     ASSERT_EQ(0, utime("tests/test2.txt", (struct utimbuf *)&(struct utimbuf){.actime = entries[1].mod_time, .modtime = entries[1].mod_time}));
+#endif
     ASSERT_EQ(PICOZIP_OK, picozip_new_entry_path(file, "test.txt", "tests/test.txt", NULL, 0));
     ASSERT_EQ(PICOZIP_OK, picozip_new_entry_path(file, "test2.txt", "tests/test2.txt", "comment", 7));
     CHECK_CALL(assert_zip_file(entries, 2, NULL, 0));
