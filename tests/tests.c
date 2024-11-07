@@ -44,8 +44,8 @@ static void time_t_dostime(time_t current_time, uint16_t *dos_date, uint16_t *do
         tm->tm_sec = tm->tm_min = tm->tm_hour = tm->tm_mon = 0;
         tm->tm_mday = 1;
     }
-    *dos_time = (uint16_t)(((tm->tm_hour) << 11) + ((tm->tm_min) << 5) + ((tm->tm_sec) >> 1));
-    *dos_date = (uint16_t)(((tm->tm_year + 1900 - 1980) << 9) + ((tm->tm_mon + 1) << 5) + tm->tm_mday);
+    *dos_time = (uint16_t)(((tm->tm_hour << 11) & 0xf800) | ((tm->tm_min << 5) & 0x7e0) | ((tm->tm_sec >> 1) & 0x1f));
+    *dos_date = (uint16_t)((((tm->tm_year + 1900 - 1980) << 9) & 0xfe00) | (((tm->tm_mon + 1) << 5) & 0x1e0) | (tm->tm_mday & 0x1f));
 }
 
 TEST assert_zip_file(file_entry *entries, size_t entry_len, uint8_t *comment, size_t comment_len)
@@ -69,13 +69,13 @@ TEST assert_zip_file(file_entry *entries, size_t entry_len, uint8_t *comment, si
     /* check for local header and content */
     for (offset = i = 0; i < entry_len; i++)
     {
-        time_t_dostime(entries[i].mod_time, &dos_date, &dos_time);
         ASSERT_EQ(ZIP_MAGIC, READ_LE32(data, offset));           /* magic */
         ASSERT_EQ(0x14, READ_LE16(data, offset + 4));            /* version (2.0) */
         ASSERT_EQ(entries[i].flag, READ_LE16(data, offset + 6)); /* flags */
         ASSERT_EQ(0, READ_LE16(data, offset + 8));               /* compression */
         if (entries[i].check_mod_time)
         {
+            time_t_dostime(entries[i].mod_time, &dos_date, &dos_time);
             ASSERT_EQ(dos_time, READ_LE16(data, offset + 10)); /* modtime */
             ASSERT_EQ(dos_date, READ_LE16(data, offset + 12)); /* moddate */
         }

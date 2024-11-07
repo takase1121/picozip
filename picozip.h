@@ -215,8 +215,8 @@ extern "C"
             tm->tm_sec = tm->tm_min = tm->tm_hour = tm->tm_mon = 0;
             tm->tm_mday = 1;
         }
-        *dos_time = (uint16_t)(((tm->tm_hour) << 11) + ((tm->tm_min) << 5) + ((tm->tm_sec) >> 1));
-        *dos_date = (uint16_t)(((tm->tm_year + 1900 - 1980) << 9) + ((tm->tm_mon + 1) << 5) + tm->tm_mday);
+        *dos_time = (uint16_t)(((tm->tm_hour << 11) & 0xf800) | ((tm->tm_min << 5) & 0x7e0) | ((tm->tm_sec >> 1) & 0x1f));
+        *dos_date = (uint16_t)((((tm->tm_year + 1900 - 1980) << 9) & 0xfe00) | (((tm->tm_mon + 1) << 5) & 0x1e0) | (tm->tm_mday & 0x1f));
     }
 
 /* https://create.stephan-brumme.com/crc32 */
