@@ -74,9 +74,11 @@ jobs:
         run: |
           meson test -C builddir --print-errorlogs --no-stdsplit
           ninja -C builddir coverage
-        
-      - name: Upload Coverage
+
+      - name: Upload Logs
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.config.os }}-${{ matrix.config.type }}-${{ matrix.config.arch }}
-          path: builddir/meson-logs/coveragereport
+          path: builddir/meson-logs
+          if-no-files-found: ignore
