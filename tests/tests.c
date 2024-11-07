@@ -271,7 +271,7 @@ TEST test_picozip_new_entry_mem(void)
             .extra_field = NULL, /* don't check for extra fields */
             .extra_field_len = 9,
             .data = "hello world",
-            .crc32 = 0xf2b5ee7a,
+            .crc32 = 0x0d4a1185,
             .comment_len = 0,
             .comment = NULL,
         },
@@ -284,7 +284,7 @@ TEST test_picozip_new_entry_mem(void)
             .extra_field = NULL, /* don't check for extra fields */
             .extra_field_len = 9,
             .data = "\x01\x15\x00\x04",
-            .crc32 = 0x7B87E204,
+            .crc32 = 0x84781dfb,
             .comment_len = 0,
             .comment = NULL,
         },
@@ -315,7 +315,7 @@ TEST test_picozip_new_entry_mem_ex(void)
             .extra_field = "UT\x05\x00\x01\xD0\x3F\x26\x67", /* UT, 5, mod time set (1), 1730559952 */
             .extra_field_len = 9,
             .data = "lorem ipsum dolor si amet",
-            .crc32 = 0x29AFAD85,
+            .crc32 = 0xd650527a,
             .comment_len = 0,
             .comment = NULL,
         },
@@ -328,7 +328,7 @@ TEST test_picozip_new_entry_mem_ex(void)
             .extra_field = "UT\x05\x00\x01\x00\x00\x00\x00", /* UT, 5, mod time set (1), 0 */
             .extra_field_len = 9,
             .data = "\x01\x15\x00\x04",
-            .crc32 = 0x7B87E204,
+            .crc32 = 0x84781dfb,
             .comment_len = 21,
             .comment = "this is a binary file",
         },
@@ -375,7 +375,7 @@ TEST test_picozip_new_entry_path(void)
             .extra_field = "UT\x05\x00\x01\x00\x00\x00\x00", /* UT, 5, mod time set (1), 0 */
             .extra_field_len = 9,
             .data = "hello world!",
-            .crc32 = 0xFC4B3D92,
+            .crc32 = 0x03b4c26d,
             .comment_len = 0,
             .comment = NULL,
         },
@@ -388,7 +388,7 @@ TEST test_picozip_new_entry_path(void)
             .extra_field = "UT\x05\x00\x01\x80\x00\x27\x67", /* UT, 5, mod time set (1), 1730609280 */
             .extra_field_len = 9,
             .data = "zip library",
-            .crc32 = 0x903E8D9F,
+            .crc32 = 0x6fc17260,
             .comment_len = 7,
             .comment = "comment",
         },

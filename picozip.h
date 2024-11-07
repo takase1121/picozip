@@ -443,7 +443,7 @@ extern "C"
         entry->extra_field_len = PICOZIP__ATTR_SIZE + PICOZIP__LOCAL_TIMESTAMP_SIZE;
         entry->comment_len = comment_len;
         /* calculate the CRC */
-        entry->crc32 = picozip__crc32(data, size, PICOZIP__CRC_START) ^ 0xFFFFFFFF;
+        entry->crc32 = picozip__crc32(data, size, PICOZIP__CRC_START);
         /* write the filename */
         memcpy(entry->metadata, path, filename_len);
         /* write the timestamp field */
@@ -687,7 +687,6 @@ extern "C"
             file_size += data_read;
         } while (data_read == PICOZIP_READ_BUF);
 
-        entry->crc32 ^= 0xFFFFFFFF;
         entry->comp_size = entry->uncomp_size = file_size;
 
         /* write data descriptor */
