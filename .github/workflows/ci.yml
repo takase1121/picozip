@@ -69,7 +69,7 @@ jobs:
       - name: Compile
         run: meson compile -C builddir
 
-      - name: Test & Coverage
+      - name: Run Tests
         run: meson test -C builddir --print-errorlogs --no-stdsplit
 
       - name: Upload Logs
