@@ -1,5 +1,5 @@
 /**
- * picozip.h - A simple library to write uncompressed ZIP files.
+ * picozip.h v1.0.0 - A simple library to write uncompressed ZIP files.
  *
  * This is just some code I wrote to create really simple ZIP files
  * with no compression and the extended timestamp attribute,
